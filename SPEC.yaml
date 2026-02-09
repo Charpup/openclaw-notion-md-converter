@@ -1,0 +1,186 @@
+# SPEC.yaml - Notion Markdown Converter Skill
+# SDD (Specification-Driven Development) Layer
+
+metadata:
+  name: notion-md-converter
+  version: 1.0.0
+  description: Convert Markdown to Notion blocks using Martian library
+  author: Galatea
+  license: MIT
+
+# SDD Layer: Behavior Specifications
+behavior:
+  # End-to-End Acceptance Scenarios
+  acceptance:
+    - scenario: "Convert simple journal entry"
+      given:
+        - "A markdown string with headers, paragraphs, and lists"
+      when:
+        - "convertMarkdownToBlocks is called"
+      then:
+        - "Returns valid Notion blocks array"
+        - "Blocks match markdown structure"
+        - "No data loss in conversion"
+      
+    - scenario: "Handle complex formatting"
+      given:
+        - "Markdown with code blocks, tables, and GFM alerts"
+      when:
+        - "convertMarkdownToBlocks is called"
+      then:
+        - "Code blocks have language annotation"
+        - "Tables convert to Notion table blocks"
+        - "GFM alerts convert to colored callouts"
+    
+    - scenario: "Graceful error handling"
+      given:
+        - "Invalid or oversized content"
+      when:
+        - "Conversion fails or exceeds limits"
+      then:
+        - "Returns error with details"
+        - "Provides fallback plain text option"
+        - "Never crashes the caller"
+
+  # Module Collaboration Tests
+  collaboration:
+    - name: "martian-integration"
+      modules:
+        - "markdown-parser"
+        - "notion-formatter"
+      contract:
+        - "Parser outputs valid AST"
+        - "Formatter accepts AST and returns blocks"
+        - "Error in parser propagates to caller"
+    
+    - name: "notion-client-integration"
+      modules:
+        - "block-converter"
+        - "notion-api-client"
+      contract:
+        - "Converter validates blocks before API call"
+        - "Client handles rate limiting"
+        - "API errors returned without modification"
+
+# TDD Layer: Implementation Tests
+tdd:
+  # Interface Contract Tests
+  interfaces:
+    - name: "convertMarkdownToBlocks"
+      type: "function"
+      input:
+        - name: "markdown"
+          type: "string"
+          required: true
+          description: "Markdown content to convert"
+        - name: "options"
+          type: "object"
+          required: false
+          description: "Conversion options"
+      output:
+        type: "array"
+        items:
+          type: "object"
+          description: "Notion block objects"
+      contracts:
+        - "Input: valid markdown → Output: non-empty blocks array"
+        - "Input: empty string → Output: empty array"
+        - "Input: invalid markdown → Output: error or fallback"
+    
+    - name: "createNotionPageFromMarkdown"
+      type: "function"
+      input:
+        - name: "parentPageId"
+          type: "string"
+          required: true
+        - name: "title"
+          type: "string"
+          required: true
+        - name: "markdown"
+          type: "string"
+          required: true
+      output:
+        type: "object"
+        properties:
+          pageId: "string"
+          url: "string"
+          blocksCreated: "number"
+
+  # Module Integration Tests
+  integration:
+    - name: "martian-adapter"
+      tests:
+        - "Martian markdownToBlocks produces valid Notion API format"
+        - "Emoji callouts enabled via options"
+        - "Large content auto-truncation"
+    
+    - name: "notion-api"
+      tests:
+        - "Blocks validation before API call"
+        - "Pagination for >100 blocks"
+        - "Rate limit handling with backoff"
+
+  # Unit Tests
+  units:
+    - module: "block-validator"
+      tests:
+        - "validateBlockCount returns true for <=100 blocks"
+        - "validateBlockCount returns false for >100 blocks"
+        - "validateBlockTypes accepts supported types"
+    
+    - module: "error-handler"
+      tests:
+        - "createFallbackBlock returns paragraph with content"
+        - "formatError includes code and message"
+        - "isRetryableError identifies rate limits"
+
+# Tool Function Contracts (OpenClaw Integration)
+tools:
+  - name: "md2notion-convert"
+    description: "Convert Markdown string to Notion blocks"
+    schema:
+      input:
+        type: "object"
+        properties:
+          markdown:
+            type: "string"
+            description: "Markdown content"
+          enableEmojiCallouts:
+            type: "boolean"
+            default: true
+      output:
+        type: "object"
+        properties:
+          success: "boolean"
+          blocks: "array"
+          error: "string"
+          warning: "string"
+
+  - name: "md2notion-create-page"
+    description: "Create Notion page from Markdown"
+    schema:
+      input:
+        type: "object"
+        properties:
+          parentId:
+            type: "string"
+            description: "Parent page or database ID"
+          title:
+            type: "string"
+          markdown:
+            type: "string"
+      output:
+        type: "object"
+        properties:
+          success: "boolean"
+          pageId: "string"
+          url: "string"
+          error: "string"
+
+# Quality Gates
+quality:
+  - "All acceptance scenarios pass"
+  - "Unit test coverage >= 80%"
+  - "Integration tests pass against real Notion API"
+  - "No TypeScript compilation errors"
+  - "SKILL.md documentation complete"
