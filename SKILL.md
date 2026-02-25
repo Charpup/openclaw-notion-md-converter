@@ -1,11 +1,12 @@
 ---
 name: notion-md-converter
 description: Convert Markdown content to Notion blocks format. Use when creating Notion pages from Markdown, converting documentation to Notion, or batch importing Markdown files to Notion. Triggers on "markdown to notion", "md to notion", "convert markdown", "notion blocks".
+version: 2.1.0
 ---
 
 # Notion Markdown Converter
 
-**Version:** 2.0.0 | **Author:** OpenClaw | **Homepage:** https://github.com/Charpup/openclaw-notion-md-converter
+**Version:** 2.1.0 | **Author:** OpenClaw | **Homepage:** https://github.com/Charpup/openclaw-notion-md-converter
 
 Markdown 到 Notion blocks 格式转换器，支持丰富的 Markdown 语法到 Notion API 块的转换。
 
@@ -286,6 +287,20 @@ async function createPageFromMarkdown(markdown, parentId) {
   });
 }
 ```
+
+## Notion Skill Ecosystem
+
+OpenClaw Notion skills 形成互补生态，可单独使用或组合使用：
+
+| Skill | 职责 | 适用场景 |
+|-------|------|---------|
+| **notion-mcp-wrapper** | 弹性连接层：健康监控、自动重连、REST API 降级 | 任何需要高可用 Notion API 访问的场景 |
+| **notion-md-converter** (本 skill) | 格式转换：Markdown → Notion blocks | 批量导入文档、从 Markdown 源创建 Notion 页面 |
+| **notion-journal-skill** | 日记自动化：内存扫描、内容聚合、按日期创建条目 | 自动生成每日工作日志 |
+
+**组合示例**：
+- Markdown 日记导入：`notion-md-converter` 转换 Markdown 内容 → `notion-journal-skill` 聚合到日记条目
+- 高可用文档导入：`notion-mcp-wrapper` 提供连接保障 → `notion-md-converter` 构建 Notion blocks
 
 ## License
 
