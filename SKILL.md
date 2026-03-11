@@ -1,7 +1,7 @@
 ---
 name: notion-md-converter
-description: Convert Markdown content to Notion blocks format. Use when creating Notion pages from Markdown, converting documentation to Notion, or batch importing Markdown files to Notion. Triggers on "markdown to notion", "md to notion", "convert markdown", "notion blocks".
-version: 2.1.0
+description: >-
+  Convert Markdown content to Notion blocks format. Use when creating Notion pages from Markdown, converting documentation to Notion, or batch importing Markdown files to Notion. Triggers on "markdown to notion", "md to notion", "convert markdown", "notion blocks".
 ---
 
 # Notion Markdown Converter

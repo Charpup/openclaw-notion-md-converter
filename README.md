@@ -69,3 +69,6 @@ notion-md-converter batch ./docs --output ./notion-blocks
 ## License
 
 MIT
+
+## Changelog
+- 2026-03-11: Skill audit upgrade — normalized SKILL.md frontmatter to `name` + `description`, revalidated trigger wording, and rechecked lightweight lint/smoke compatibility with OpenClaw.
